@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
 
   infoBubble: {
     margin: 20,
+    marginTop: 10,
     marginBottom: 10,
     backgroundColor: "#efefef",
     borderRadius: 10,
