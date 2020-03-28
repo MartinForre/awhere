@@ -7,6 +7,7 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using System.Configuration;
 
 namespace Awhere.Api.Services
 {
@@ -15,10 +16,8 @@ namespace Awhere.Api.Services
         private readonly Settings _settings;
 
         public DbSet<InfectionPing> Pings { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(
-    @"Server=tcp:localhost,1433\\Catalog=Pings;Database=Awhere;User ID=SA;Password=yourAwesome#Password;", x => x.UseNetTopologySuite());
 
-        public DataService(IOptions<Settings> settings)
+        public DataService(DbContextOptions<DataService> options, IOptions<Settings> settings) : base(options)
         {
             _settings = settings.Value;
         }

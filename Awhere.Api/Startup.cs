@@ -1,17 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Awhere.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using SQLitePCL;
 
 namespace Awhere.Api
 {
@@ -28,7 +21,10 @@ namespace Awhere.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<Settings>(Configuration.GetSection("Settings"));
-            services.AddDbContext<DataService>();
+            services.AddDbContext<DataService>(opt =>
+            {
+                opt.UseSqlServer(Configuration.GetConnectionString("Awhere"), x => x.UseNetTopologySuite());
+            });
             services.AddControllers();
             services.AddHostedService<HealthWorker>();
         }
