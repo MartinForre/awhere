@@ -27,6 +27,8 @@ namespace Awhere.Api
             });
             services.AddControllers();
             services.AddHostedService<HealthWorker>();
+
+            services.AddSingleton<RandomInfectionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

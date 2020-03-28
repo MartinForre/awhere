@@ -14,12 +14,14 @@ namespace Awhere.Api.Services
     public class DataService : DbContext
     {
         private readonly Settings _settings;
+        private readonly RandomInfectionService _randomInfectionService;
 
         public DbSet<InfectionPing> Pings { get; set; }
 
-        public DataService(DbContextOptions<DataService> options, IOptions<Settings> settings) : base(options)
+        public DataService(DbContextOptions<DataService> options, IOptions<Settings> settings, RandomInfectionService randomInfectionService) : base(options)
         {
             _settings = settings.Value;
+            this._randomInfectionService = randomInfectionService;
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +49,7 @@ namespace Awhere.Api.Services
 
         public IEnumerable<InfectionPing> GetPingsWithinDistance(double latitude, double longitude, double distance)
         {
+            return _randomInfectionService.CreateInfectionAroundPoint(latitude, longitude);
             var location = new Point(longitude, latitude) { SRID = 4326 };
             return GetPingsWithinDistance(location, distance);
         }
