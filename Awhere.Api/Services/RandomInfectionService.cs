@@ -11,7 +11,7 @@ namespace Awhere.Api.Services
         public IEnumerable<InfectionPing> CreateInfectionAroundPoint(double latitude, double longitude)
         {
             var pings = new List<InfectionPing>();
-            const int amount = 50;
+            const int amount = 150;
 
             for(var i = 0; i < amount; i++)
             {
@@ -30,9 +30,9 @@ namespace Awhere.Api.Services
 
         static double GetRandomDistance()
         {
-            var amount = random.NextDouble() * 0.1;
+            var spread = random.NextDouble() * 0.2;
             var distance = random.NextDouble();
-            return distance > 0.5 ? distance * (amount * -1) : distance * amount;
+            return distance > 0.5 ? distance * (spread * -1) : distance * spread;
         }
     }
 }
