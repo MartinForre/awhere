@@ -7,6 +7,10 @@ namespace Awhere.Api.Models
 {
     public class InfectionPing
     {
+        public InfectionPing()
+        {
+
+        }
         public InfectionPing(RiskRegistration registration)
         {
             Location = new Point(registration.RiskArea.Longitude, registration.RiskArea.Latitude) { SRID = 4326 };
