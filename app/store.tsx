@@ -1,5 +1,6 @@
 import { Region } from "react-native-maps";
 import * as Location from "expo-location";
+import RiskRegistration from "./models/riskRegistration";
 
 export type Infected = "yes" | "no" | "maybe" | null;
 export type Recovered = "yes" | "no" | "maybe" | null;
@@ -15,6 +16,7 @@ export type MyState = {
 export type MapState = {
   region: Region | null;
   location: Location.LocationData | null;
+  registrations: RiskRegistration[];
 };
 
 export type AppState = {
@@ -39,7 +41,8 @@ export const createInitialState = (): AppState => ({
   },
   map: {
     region: null,
-    location: null
+    location: null,
+    registrations: []
   }
 });
 

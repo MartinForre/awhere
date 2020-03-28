@@ -1,4 +1,3 @@
-import { useAppContext } from "../appContext";
 import { useEffect, useRef } from "react";
 import { AppState } from "../store";
 import ApiClient from "../api/apiClient";

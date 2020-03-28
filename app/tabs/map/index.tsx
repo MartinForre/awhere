@@ -1,10 +1,27 @@
 import React from "react";
 import { Platform, StyleSheet, Text, View, Dimensions } from "react-native";
-import MapView, { Region, EventUserLocation } from "react-native-maps";
+import MapView, { Region, EventUserLocation, Circle } from "react-native-maps";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
 import { useAppContext } from "../../appContext";
+import RiskRegistration from "../../models/riskRegistration";
+
+const getRandomDistance = () => {
+  const distance = Math.random() * 0.1;
+  const random = Math.random();
+  return random > 0.5 ? random * (distance * -1) : random * distance;
+};
+
+const createRandomRegistration = (
+  currentLocation?: Location.LocationData
+): RiskRegistration => ({
+  severity: Math.random() * 3,
+  riskArea: {
+    latitude: currentLocation.coords.latitude + getRandomDistance(),
+    longitude: currentLocation.coords.longitude + getRandomDistance()
+  }
+});
 
 export default function App() {
   const { state, dispatch } = useAppContext();
@@ -51,6 +68,110 @@ export default function App() {
     dispatch({ type: "set region", region });
   }, []);
 
+  const tempRegistrations = React.useMemo(
+    () =>
+      state.map.location
+        ? [
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location),
+            createRandomRegistration(state.map.location)
+          ]
+        : [],
+    [state.map.location]
+  );
+
+  const circleRadius = React.useMemo(() => {
+    return (
+      800 *
+      Math.max(
+        state.map.region?.latitudeDelta || 0,
+        state.map.region?.longitudeDelta || 0
+      )
+    );
+  }, [state.map.region?.latitudeDelta, state.map.region?.longitudeDelta]);
+
   return (
     <View style={styles.container}>
       {state.map.location && (
@@ -64,7 +185,23 @@ export default function App() {
           showsCompass
           showsScale
           showsMyLocationButton
-        />
+          showsBuildings
+          showsTraffic
+          showsPointsOfInterest
+        >
+          {tempRegistrations.map(registration => (
+            <Circle
+              key={
+                registration.riskArea.latitude.toString() +
+                registration.riskArea.longitude.toString()
+              }
+              center={registration.riskArea}
+              radius={circleRadius}
+              fillColor={`rgba(255, 0, 0, ${registration.severity / 3})`}
+              strokeColor="rgba(255, 0, 0, 1)"
+            />
+          ))}
+        </MapView>
       )}
     </View>
   );
