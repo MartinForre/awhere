@@ -15,6 +15,7 @@ namespace Awhere.Api.Models
         {
             Location = new Point(registration.RiskArea.Longitude, registration.RiskArea.Latitude) { SRID = 4326 };
             Severity = registration.Severity;
+            Created = registration.Created;
         }
         public int Id { get; set; }
         public Point Location { get; set; }

@@ -27,8 +27,10 @@ namespace Awhere.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<Settings>(Configuration.GetSection("Settings"));
             services.AddDbContext<DataService>();
             services.AddControllers();
+            services.AddHostedService<HealthWorker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,6 +51,7 @@ namespace Awhere.Api
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

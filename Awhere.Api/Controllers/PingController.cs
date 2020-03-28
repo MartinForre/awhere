@@ -1,3 +1,4 @@
+using System.Linq;
 using Awhere.Api.Entities;
 using Awhere.Api.Models;
 using Awhere.Api.Services;
@@ -24,10 +25,10 @@ namespace Awhere.Api.Controllers
             return Created("/", registration);
         }
 
-        [HttpGet]
+        [HttpGet("GetNearbyRiskAreas")]
         public IActionResult GetNearbyRiskAreasAsync(double latitude, double longitude, double distanceMeters = 100)
         {
-            var pingsNearby = _dataService.GetPingsWithinDistance(latitude, longitude, distanceMeters);
+            var pingsNearby = _dataService.GetPingsWithinDistance(latitude, longitude, distanceMeters).Select(p => new RiskRegistration(p));
             return Ok(pingsNearby);
         }
     }
