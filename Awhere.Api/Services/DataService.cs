@@ -21,19 +21,19 @@ namespace Awhere.Api.Services
                 {
                     Id = 1,
                     Location = new Point(5.751524, 58.853965) { SRID = 4326 },
-                    Description = "Lucky Bowl"
+                    Severity = 2
                 },
                 new InfectionPing
                 {
                     Id = 2,
                     Location = new Point(5.749822, 58.854876) { SRID = 4326 },
-                    Description = "Hana Roundabout"
+                    Severity = 1
                 },
                 new InfectionPing
                 {
                     Id = 3,
                     Location = new Point(16.3738, 48.2082) { SRID = 4326 },
-                    Description = "Vienna"
+                    Severity = 0
                 }
             );
         }
@@ -49,13 +49,13 @@ namespace Awhere.Api.Services
             return near;
         }
 
-        public void RegisterPing(double latitude, double longitude, string description)
+        public void RegisterPing(double latitude, double longitude, int severity)
         {
 
             Pings.Add(new InfectionPing
             {
-                Description = description,
-                Location = new Point(longitude, latitude) { SRID = 4326 }
+                Location = new Point(longitude, latitude) { SRID = 4326 },
+                Severity = severity
             });
             SaveChanges();
         }

@@ -26,10 +26,6 @@ namespace Awhere.Api.Tests
             using (var db = new DataService())
             {
                 var near = db.GetPingsWithinDistance(currentLocation, 200);
-                foreach (var place in db.Pings.OrderBy(p => p.Location.Distance(currentLocation)).Select(p => new { Description = p.Description, Distance = p.Location.Distance(currentLocation) }))
-                {
-                    _output.WriteLine($"Distance to current location [{place.Description}]: {place.Distance}");
-                }
                 near.Should().HaveCount(2);
             }
         }
