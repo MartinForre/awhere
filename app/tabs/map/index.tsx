@@ -4,10 +4,10 @@ import {
   StyleSheet,
   Text,
   View,
-  Dimensions,
   TouchableHighlight,
   Animated,
-  Easing
+  Easing,
+  TouchableOpacity
 } from "react-native";
 import MapView, { Region, EventUserLocation, Circle } from "react-native-maps";
 import Constants from "expo-constants";
@@ -16,6 +16,7 @@ import * as Permissions from "expo-permissions";
 import { useAppContext } from "../../appContext";
 import useRiskRegistrations from "../../hooks/useRiskRegistrations";
 import useRiskRegistrationCircles from "./useRiskRegistrationCircles";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const MapTab = props => {
   console.log(props.navigation.isFocused());
@@ -96,16 +97,27 @@ const MapTab = props => {
   const [toolbarAnimation] = React.useState(new Animated.Value(-40));
   React.useEffect(() => {
     Animated.timing(toolbarAnimation, {
-      toValue: 20,
+      toValue: 30,
       easing: Easing.elastic(3),
       duration: 800
     }).start();
   }, []);
 
+  const mapRef = React.useRef<MapView>(null);
+
+  const onMyLocationClick = React.useCallback(() => {
+    if (!mapRef.current) {
+      return;
+    }
+
+    mapRef.current.animateToRegion(initialRegion);
+  }, [mapRef.current, initialRegion]);
+
   return (
     <View style={styles.container}>
       {state.map.location && (
         <MapView
+          ref={mapRef}
           style={styles.mapStyle}
           mapType={state.me.mapType}
           initialRegion={state.map.region || initialRegion}
@@ -191,6 +203,20 @@ const MapTab = props => {
           </Text>
         </TouchableHighlight>
       </Animated.View>
+      <Animated.View
+        style={{
+          ...styles.myLocationButtonOverlay,
+          bottom: toolbarAnimation
+        }}
+      >
+        <TouchableOpacity
+          style={styles.myLocationButton}
+          activeOpacity={0.4}
+          onPress={onMyLocationClick}
+        >
+          <FontAwesome name="location-arrow" />
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 };
@@ -208,6 +234,7 @@ const styles = StyleSheet.create({
   mapToolbarOverlay: {
     position: "absolute",
     zIndex: 2,
+    left: 20,
     backgroundColor: "#F4E4FF",
     borderRadius: 40,
     height: 40,
@@ -232,6 +259,25 @@ const styles = StyleSheet.create({
 
   mapTypeButtonActiveText: {
     color: "#FFFFFF"
+  },
+
+  myLocationButtonOverlay: {
+    position: "absolute",
+    zIndex: 2,
+    right: 20,
+    backgroundColor: "#F4E4FF",
+    borderRadius: 20,
+    height: 40,
+    flexDirection: "row",
+    shadowColor: "#9A00FF",
+    shadowRadius: 10,
+    shadowOpacity: 0.15
+  },
+
+  myLocationButton: {
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center"
   }
 });
 

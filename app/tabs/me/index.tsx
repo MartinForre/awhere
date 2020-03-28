@@ -34,7 +34,6 @@ const MeTab = () => {
       </View>
       <InfectedRow />
       <AtRiskRow />
-      <RecoveredRow />
       <View style={styles.notificationRow}>
         <Ionicons name="ios-notifications" size={16} color="#666666" />
         <Text style={styles.notificationRowText}>Turn on notifications</Text>
