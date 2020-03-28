@@ -29,7 +29,7 @@ const MeTab = () => {
       </View>
       <View style={styles.row}>
         <Text style={{ marginTop: 20, fontSize: 20 }}>
-          All fields below are optional
+          Everything is optional
         </Text>
       </View>
       <InfectedRow />
