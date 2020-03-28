@@ -79,8 +79,6 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   mapStyle: {
-    flexGrow: 1,
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height
+    ...StyleSheet.absoluteFillObject
   }
 });
