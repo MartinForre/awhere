@@ -10,6 +10,7 @@ using NetTopologySuite.Geometries;
 using NSubstitute;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Awhere.Api.Tests
 {
@@ -24,10 +25,13 @@ namespace Awhere.Api.Tests
         [Fact]
         public void It_Can_Retrieve_Pings_Within_100m()
         {
+            var options = new DbContextOptionsBuilder<DataService>()
+                .UseSqlServer("Server=tcp:localhost,1433\\Catalog=Pings;Database=Awhere;User ID=SA;Password=yourAwesome#Password;", x => x.UseNetTopologySuite())
+                .Options;
             var currentLocation = new Point(5.749310, 58.855320) { SRID = 4326 };
             var settings = Options.Create(new Settings { LifetimeOnSurfacesInDays = 3 });
             // var currentLocation = new Point(13.4050, 52.5200) { SRID = 4326 };
-            using (var db = new DataService(settings))
+            using (var db = new DataService(options, settings))
             {
                 var near = db.GetPingsWithinDistance(currentLocation, 100);
                 near.Should().HaveCount(1);
@@ -37,8 +41,11 @@ namespace Awhere.Api.Tests
         [Fact]
         public async Task It_Decreases_Severity_Based_On_Time()
         {
+            var options = new DbContextOptionsBuilder<DataService>()
+                                .UseInMemoryDatabase(databaseName: "test")
+                                .Options;
             var settings = Options.Create(new Settings { LifetimeOnSurfacesInDays = 3 });
-            using (var db = new DataService(settings))
+            using (var db = new DataService(options, settings))
             {
                 var id = db.RegisterPing(1, 1, 3, DateTime.Now.AddDays(-1));
                 db.SaveChanges();
@@ -54,8 +61,11 @@ namespace Awhere.Api.Tests
         [Fact]
         public async Task It_Cleans_Up_Expired_Pings()
         {
+            var options = new DbContextOptionsBuilder<DataService>()
+                                .UseInMemoryDatabase(databaseName: "test")
+                                .Options;
             var settings = Options.Create(new Settings { LifetimeOnSurfacesInDays = 3 });
-            using (var db = new DataService(settings))
+            using (var db = new DataService(options, settings))
             {
                 var id = db.RegisterPing(1, 1, 3, DateTime.Now.AddDays(-4));
                 db.SaveChanges();

@@ -44,21 +44,21 @@ namespace Awhere.Api.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2020, 3, 28, 13, 43, 45, 375, DateTimeKind.Local).AddTicks(9696),
+                            Created = new DateTime(2020, 3, 28, 15, 58, 44, 494, DateTimeKind.Local).AddTicks(6466),
                             Location = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (5.751524 58.853965)"),
                             Severity = 2
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2020, 3, 28, 13, 43, 45, 383, DateTimeKind.Local).AddTicks(1191),
+                            Created = new DateTime(2020, 3, 28, 15, 58, 44, 501, DateTimeKind.Local).AddTicks(1124),
                             Location = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (5.749822 58.854876)"),
                             Severity = 1
                         },
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2020, 3, 28, 13, 43, 45, 383, DateTimeKind.Local).AddTicks(2246),
+                            Created = new DateTime(2020, 3, 28, 15, 58, 44, 501, DateTimeKind.Local).AddTicks(2352),
                             Location = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (16.3738 48.2082)"),
                             Severity = 0
                         });
