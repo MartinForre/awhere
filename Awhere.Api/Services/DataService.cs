@@ -3,60 +3,56 @@ using Awhere.Api.Models;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using NetTopologySuite.Geometries;
+using NetTopologySuite;
 
 namespace Awhere.Api.Services
 {
     public class DataService : DbContext
     {
         public DbSet<InfectionPing> Pings { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("Awhere");
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(
+    @"Server=tcp:localhost,1433\\Catalog=Pings;Database=Awhere;User ID=SA;Password=yourAwesome#Password;", x => x.UseNetTopologySuite());
 
-        public DataService()
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Database.EnsureCreated();
+            modelBuilder.Entity<InfectionPing>().HasData(
+                new InfectionPing
+                {
+                    Id = 1,
+                    Location = new Point(5.751524, 58.853965) { SRID = 4326 },
+                    Description = "Lucky Bowl"
+                },
+                new InfectionPing
+                {
+                    Id = 2,
+                    Location = new Point(5.749822, 58.854876) { SRID = 4326 },
+                    Description = "Hana Roundabout"
+                },
+                new InfectionPing
+                {
+                    Id = 3,
+                    Location = new Point(16.3738, 48.2082) { SRID = 4326 },
+                    Description = "Vienna"
+                }
+            );
         }
 
-        public IEnumerable<InfectionPing> GetPingsWithinDistance(Location currentLocation, double distance)
+        public IEnumerable<InfectionPing> GetPingsWithinDistance(Point currentLocation, double distance)
         {
-            var near = Pings.Where(p => GetDistanceBetweenPoints(p.Location, currentLocation) <= distance);
+            var near = Pings.Where(p => p.Location.Distance(currentLocation) <= distance);
             return near;
         }
 
-        public void RegisterPing(double longitude, double latitude)
+        public void RegisterPing(double latitude, double longitude, string description)
         {
+
             Pings.Add(new InfectionPing
             {
-                Location = new Location(latitude, longitude)
+                Description = description,
+                Location = new Point(longitude, latitude) { SRID = 4326 }
             });
             SaveChanges();
-        }
-
-        private double GetDistanceBetweenPoints(Location start, Location finish)
-        {
-            double distance = 0;
-
-            double dLat = (finish.Latitude - start.Latitude) / 180 * Math.PI;
-            double dLong = (finish.Longitude - start.Longitude) / 180 * Math.PI;
-
-            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
-                        + Math.Cos(finish.Latitude) * Math.Sin(dLong / 2) * Math.Sin(dLong / 2);
-            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-
-            //Calculate radius of earth
-            // For this you can assume any of the two points.
-            double radiusE = 6378135; // Equatorial radius, in metres
-            double radiusP = 6356750; // Polar Radius
-
-            //Numerator part of function
-            double nr = Math.Pow(radiusE * radiusP * Math.Cos(start.Latitude / 180 * Math.PI), 2);
-            //Denominator part of the function
-            double dr = Math.Pow(radiusE * Math.Cos(start.Latitude / 180 * Math.PI), 2)
-                            + Math.Pow(radiusP * Math.Sin(start.Latitude / 180 * Math.PI), 2);
-            double radius = Math.Sqrt(nr / dr);
-
-            //Calaculate distance in metres.
-            distance = radius * c;
-            return distance;
         }
     }
 }

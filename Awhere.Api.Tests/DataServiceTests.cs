@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Awhere.Api.Models;
 using Xunit.Abstractions;
+using NetTopologySuite.Geometries;
 
 namespace Awhere.Api.Tests
 {
@@ -20,17 +21,14 @@ namespace Awhere.Api.Tests
         [Fact]
         public void It_Can_Retrieve_Pings_Within_10m()
         {
-            var currentLocation = new Location(58.855320, 5.749310);
+            var currentLocation = new Point(5.749310, 58.855320) { SRID = 4326 };
+            // var currentLocation = new Point(13.4050, 52.5200) { SRID = 4326 };
             using (var db = new DataService())
             {
-                db.RegisterPing(5.751524, 58.853965); //lucky bowl
-                db.RegisterPing(5.749822, 58.854876); //roundabout
-                db.RegisterPing(5.749867, 58.854427);
-                db.SaveChanges();
                 var near = db.GetPingsWithinDistance(currentLocation, 200);
-                foreach (var place in db.Pings)
+                foreach (var place in db.Pings.OrderBy(p => p.Location.Distance(currentLocation)).Select(p => new { Description = p.Description, Distance = p.Location.Distance(currentLocation) }))
                 {
-                    _output.WriteLine($"Distance to current location: {place.Location.Distance(currentLocation)}");
+                    _output.WriteLine($"Distance to current location [{place.Description}]: {place.Distance}");
                 }
                 near.Should().HaveCount(2);
             }
