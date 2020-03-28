@@ -31,6 +31,7 @@ export type AppAction =
   | { type: "reset me"; me: MyState }
   | { type: "set region"; region: Region }
   | { type: "set location"; location: Location.LocationData }
+  | { type: "set registrations"; registrations: RiskRegistration[] }
   | { type: "dev reset" };
 
 export const createInitialState = (): AppState => ({
@@ -74,6 +75,12 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
 
     case "set location":
       return { ...state, map: { ...state.map, location: action.location } };
+
+    case "set registrations":
+      return {
+        ...state,
+        map: { ...state.map, registrations: action.registrations }
+      };
 
     case "dev reset":
       return createInitialState();

@@ -1,6 +1,7 @@
 import Resources from "./resources";
 import RiskLocation from "../models/riskLocation";
 import RiskRegistration from "../models/riskRegistration";
+import randomRiskRegistrations from "./randomRiskRegistrations";
 
 export default class ApiClient {
   constructor(private resources: Resources) {}
@@ -23,6 +24,7 @@ export default class ApiClient {
   }
 
   public async getNearbyAsync(location: RiskLocation, range: number = 100) {
+    // return randomRiskRegistrations as RiskRegistration[];
     try {
       const url = this.resources.nearby(
         location.latitude,
@@ -33,9 +35,10 @@ export default class ApiClient {
       const response = await fetch(url.toString(), { method: "GET" });
 
       const data = await response.json();
-
+      console.log(data);
       return data as RiskRegistration[];
     } catch (e) {
+      console.error(e);
       return [];
     }
   }

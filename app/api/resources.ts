@@ -1,6 +1,6 @@
 export default class Resources {
   baseUrl() {
-    return "https://192.168.1.227:5001";
+    return "https://awhere.azurewebsites.net/";
   }
 
   ping() {
@@ -8,13 +8,11 @@ export default class Resources {
   }
 
   nearby(latitude: number, longitude: number, distanceMeters: number) {
-    const url = new URL("api/risk/GetNearbyRiskAreas", this.baseUrl());
-    const params = new URLSearchParams();
-    params.set("latitude", latitude.toString());
-    params.set("longitude", longitude.toString());
-    params.set("distanceMeters", distanceMeters.toString());
-
-    url.search = params.toString();
+    const params = `latitude=${latitude}&longitude=${longitude}&distanceMeters=${distanceMeters}`;
+    const url = new URL(
+      `api/risk/GetNearbyRiskAreas?${params}`,
+      this.baseUrl()
+    );
 
     return url;
   }
