@@ -1,17 +1,18 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Awhere.Api.Services
 {
     public class HealthWorker : IHostedService, IDisposable
     {
-        private readonly DataService _dataService;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private Timer _timer;
-        public HealthWorker(DataService dataService)
+        public HealthWorker(IServiceScopeFactory serviceScopeFactory)
         {
-            _dataService = dataService;
+            _serviceScopeFactory = serviceScopeFactory;
         }
         public void Dispose()
         {
@@ -26,8 +27,12 @@ namespace Awhere.Api.Services
 
         private async Task DoWork(object state)
         {
-            await _dataService.UpdateSeverityAsync();
-            await _dataService.CleanUpExpiredPingsAsync();
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var dataService = scope.ServiceProvider.GetRequiredService<DataService>();
+                await dataService.UpdateSeverityAsync();
+                await dataService.CleanUpExpiredPingsAsync();
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
