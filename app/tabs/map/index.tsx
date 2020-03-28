@@ -127,7 +127,10 @@ const MapTab = props => {
               }
               center={registration.riskArea}
               radius={Math.min(circleRadius * registration.radius, 5000)}
-              fillColor={`rgba(255, 77, 138, ${registration.severity / 3})`}
+              fillColor={`rgba(255, 77, 138, ${Math.min(
+                registration.severity / 3,
+                0.8
+              )})`}
               strokeColor="rgba(255, 77, 138, 1)"
             />
           ))}
