@@ -1,18 +1,24 @@
 import React from "react";
-import { Platform, StyleSheet, Text, View, Dimensions } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  TouchableHighlight,
+  Animated,
+  Easing
+} from "react-native";
 import MapView, { Region, EventUserLocation, Circle } from "react-native-maps";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
 import { useAppContext } from "../../appContext";
-import RiskRegistration from "../../models/riskRegistration";
 import useRiskRegistrations from "../../hooks/useRiskRegistrations";
+import useRiskRegistrationCircles from "./useRiskRegistrationCircles";
 
-type RiskRegistraionCircle = RiskRegistration & {
-  radius: number;
-};
-
-const MapTab = () => {
+const MapTab = props => {
+  console.log(props.navigation.isFocused());
   const { state, dispatch } = useAppContext();
 
   const getLocationAsync = async () => {
@@ -59,33 +65,10 @@ const MapTab = () => {
 
   const riskRegistrations = useRiskRegistrations();
 
-  const riskRegistrationCircles = React.useMemo(() => {
-    const rounded = riskRegistrations
-      .filter(r => r.severity > 0)
-      .map(r => ({
-        ...r,
-        riskArea: {
-          latitude: parseFloat(r.riskArea.latitude.toFixed(2)),
-          longitude: parseFloat(r.riskArea.longitude.toFixed(2))
-        }
-      }));
-
-    return rounded.reduce<RiskRegistraionCircle[]>((all, r) => {
-      const existing = all.find(
-        x =>
-          x.riskArea.latitude === r.riskArea.latitude &&
-          x.riskArea.longitude === r.riskArea.longitude
-      );
-
-      if (existing) {
-        existing.radius += r.severity * 2;
-        existing.severity += r.severity;
-        return all;
-      } else {
-        return [...all, { ...r, radius: 1 }];
-      }
-    }, []);
-  }, [riskRegistrations]);
+  const riskRegistrationCircles = useRiskRegistrationCircles(
+    state,
+    riskRegistrations
+  );
 
   const circleRadius = React.useMemo(() => {
     return (
@@ -97,12 +80,34 @@ const MapTab = () => {
     );
   }, [state.map.region?.latitudeDelta, state.map.region?.longitudeDelta]);
 
+  const setHybridMapType = React.useCallback(
+    () => dispatch({ type: "set map type", mapType: "hybrid" }),
+    []
+  );
+  const setSatelliteMapType = React.useCallback(
+    () => dispatch({ type: "set map type", mapType: "satellite" }),
+    []
+  );
+  const setStandardMapType = React.useCallback(
+    () => dispatch({ type: "set map type", mapType: "standard" }),
+    []
+  );
+
+  const [toolbarAnimation] = React.useState(new Animated.Value(-40));
+  React.useEffect(() => {
+    Animated.timing(toolbarAnimation, {
+      toValue: 20,
+      easing: Easing.elastic(3),
+      duration: 800
+    }).start();
+  }, []);
+
   return (
     <View style={styles.container}>
       {state.map.location && (
         <MapView
           style={styles.mapStyle}
-          mapType="hybrid"
+          mapType={state.me.mapType}
           initialRegion={state.map.region || initialRegion}
           onRegionChange={handleRegionChange}
           onUserLocationChange={handleUserLocationChange}
@@ -121,13 +126,68 @@ const MapTab = () => {
                 registration.riskArea.longitude.toString()
               }
               center={registration.riskArea}
-              radius={circleRadius * registration.radius}
+              radius={Math.min(circleRadius * registration.radius, 5000)}
               fillColor={`rgba(255, 77, 138, ${registration.severity / 3})`}
               strokeColor="rgba(255, 77, 138, 1)"
             />
           ))}
         </MapView>
       )}
+      <Animated.View
+        style={{ ...styles.mapToolbarOverlay, bottom: toolbarAnimation }}
+      >
+        <TouchableHighlight
+          onPress={setHybridMapType}
+          underlayColor={styles.mapTypeButtonActive.backgroundColor}
+          activeOpacity={0.4}
+          style={[
+            styles.mapTypeButton,
+            state.me.mapType === "hybrid" && styles.mapTypeButtonActive
+          ]}
+        >
+          <Text
+            style={
+              state.me.mapType === "hybrid" && styles.mapTypeButtonActiveText
+            }
+          >
+            Hybrid
+          </Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          onPress={setSatelliteMapType}
+          underlayColor={styles.mapTypeButtonActive.backgroundColor}
+          activeOpacity={0.4}
+          style={[
+            styles.mapTypeButton,
+            state.me.mapType === "satellite" && styles.mapTypeButtonActive
+          ]}
+        >
+          <Text
+            style={
+              state.me.mapType === "satellite" && styles.mapTypeButtonActiveText
+            }
+          >
+            Satellite
+          </Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          onPress={setStandardMapType}
+          underlayColor={styles.mapTypeButtonActive.backgroundColor}
+          activeOpacity={0.4}
+          style={[
+            styles.mapTypeButton,
+            state.me.mapType === "standard" && styles.mapTypeButtonActive
+          ]}
+        >
+          <Text
+            style={
+              state.me.mapType === "standard" && styles.mapTypeButtonActiveText
+            }
+          >
+            Standard
+          </Text>
+        </TouchableHighlight>
+      </Animated.View>
     </View>
   );
 };
@@ -141,6 +201,34 @@ const styles = StyleSheet.create({
   },
   mapStyle: {
     ...StyleSheet.absoluteFillObject
+  },
+  mapToolbarOverlay: {
+    position: "absolute",
+    zIndex: 2,
+    backgroundColor: "#F4E4FF",
+    borderRadius: 40,
+    height: 40,
+    flexDirection: "row",
+    shadowColor: "#9A00FF",
+    shadowRadius: 20,
+    shadowOpacity: 0.15
+  },
+
+  mapTypeButton: {
+    padding: 20,
+    paddingTop: 0,
+    paddingBottom: 0,
+    justifyContent: "center",
+    borderRadius: 40,
+    margin: 1
+  },
+
+  mapTypeButtonActive: {
+    backgroundColor: "#9A00FF"
+  },
+
+  mapTypeButtonActiveText: {
+    color: "#FFFFFF"
   }
 });
 

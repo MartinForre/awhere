@@ -35,7 +35,6 @@ export default class ApiClient {
       const response = await fetch(url.toString(), { method: "GET" });
 
       const data = await response.json();
-      console.log(data);
       return data as RiskRegistration[];
     } catch (e) {
       console.error(e);

@@ -1,4 +1,4 @@
-import { Region } from "react-native-maps";
+import { Region, MapTypes } from "react-native-maps";
 import * as Location from "expo-location";
 import RiskRegistration from "./models/riskRegistration";
 
@@ -12,6 +12,7 @@ export type MyState = {
   atRisk: AtRisk;
   hasBeenTouched?: boolean;
   isNotificationsOn: boolean;
+  mapType: MapTypes;
 };
 
 export type MapState = {
@@ -30,6 +31,7 @@ export type AppAction =
   | { type: "set has recovered"; recovered: Recovered }
   | { type: "set at risk"; atRisk: AtRisk }
   | { type: "toggle notifications" }
+  | { type: "set map type"; mapType: MapTypes }
   | { type: "reset me"; me: MyState }
   | { type: "set region"; region: Region }
   | { type: "set location"; location: Location.LocationData }
@@ -41,7 +43,8 @@ export const createInitialState = (): AppState => ({
     infected: null,
     recovered: null,
     atRisk: null,
-    isNotificationsOn: false
+    isNotificationsOn: false,
+    mapType: "hybrid"
   },
   map: {
     region: null,
@@ -82,6 +85,12 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
           atRisk: action.atRisk === state.me.atRisk ? null : action.atRisk,
           hasBeenTouched: true
         }
+      };
+
+    case "set map type":
+      return {
+        ...state,
+        me: { ...state.me, mapType: action.mapType }
       };
 
     case "toggle notifications":
