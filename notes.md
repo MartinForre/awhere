@@ -19,9 +19,12 @@ A map of your surroundings where areas where confirmed are hightlighted (red?).
 NOTE: The map might give the user a false sense of security, since the app will never be used by an entire population.
 The highlighted slowly fades to transparent within some time (3 days?) after the last infected was present
 If someone who might be infected the area is only 70%-ish colored instead of fully colored
+
 We need some sort of notification center:
 If notifications is on we can alert a person at risk when entering an infected area.
 When regestering as infected, you get the option to alert people you've been in close contact
 with that they have been in contact with someone who's infected.
+
 Open source
+
 Integrate with public APIs when available
