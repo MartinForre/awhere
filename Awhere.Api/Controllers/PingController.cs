@@ -15,10 +15,18 @@ namespace Awhere.Api.Controllers
             _dataService = dataService;
         }
 
+        [HttpPost]
         public IActionResult RegisterPingAsync([FromBody] InfectionPing ping)
         {
             _dataService.Pings.AddAsync(ping);
             return Ok();
+        }
+
+        [HttpGet]
+        public IActionResult GetNearbyRiskAreasAsync(double latitude, double longitude, double distanceMeters = 100)
+        {
+            var pingsNearby = _dataService.GetPingsWithinDistance(latitude, longitude, distanceMeters);
+            return Ok(pingsNearby);
         }
     }
 }

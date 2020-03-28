@@ -38,6 +38,11 @@ namespace Awhere.Api.Services
             );
         }
 
+        public IEnumerable<InfectionPing> GetPingsWithinDistance(double latitude, double longitude, double distance)
+        {
+            var location = new Point(longitude, latitude) { SRID = 4326 };
+            return GetPingsWithinDistance(location, distance);
+        }
         public IEnumerable<InfectionPing> GetPingsWithinDistance(Point currentLocation, double distance)
         {
             var near = Pings.Where(p => p.Location.Distance(currentLocation) <= distance);
