@@ -4,11 +4,15 @@ import MapView, { Region, EventUserLocation } from "react-native-maps";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
+import { useAppContext } from "../../appContext";
 
 export default function App() {
+  const { state, dispatch } = useAppContext();
+
   const [location, setLocation] = React.useState<Location.LocationData | null>(
     null
   );
+  const [region, setRegion] = React.useState<Region | null>(null);
 
   const getLocationAsync = async () => {
     if (Platform.OS === "android" && !Constants.isDevice) {
@@ -45,16 +49,22 @@ export default function App() {
     setLocation({ coords: e.nativeEvent.coordinate, timestamp: +new Date() });
   }, []);
 
+  const handleRegionChange = React.useCallback((region: Region) => {
+    setRegion(region);
+    dispatch({ type: "set region", region });
+  }, []);
+
   return (
     <View style={styles.container}>
       {location && (
         <MapView
           style={styles.mapStyle}
-          initialRegion={initialRegion}
+          initialRegion={state.map.region || initialRegion}
+          onRegionChange={handleRegionChange}
+          onUserLocationChange={handleUserLocationChange}
           showsUserLocation
           showsCompass
           showsScale
-          onUserLocationChange={handleUserLocationChange}
         />
       )}
     </View>
@@ -69,7 +79,6 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   mapStyle: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height
+    ...StyleSheet.absoluteFillObject
   }
 });
