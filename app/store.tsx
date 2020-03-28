@@ -1,4 +1,5 @@
 import { Region } from "react-native-maps";
+import * as Location from "expo-location";
 
 export type Infected = "yes" | "no" | "maybe" | null;
 export type Recovered = "yes" | "no" | "maybe" | null;
@@ -13,6 +14,7 @@ export type MyState = {
 
 export type MapState = {
   region: Region | null;
+  location: Location.LocationData | null;
 };
 
 export type AppState = {
@@ -25,8 +27,9 @@ export type AppAction =
   | { type: "set has recovered"; recovered: Recovered }
   | { type: "set at risk"; atRisk: AtRisk }
   | { type: "reset me"; me: MyState }
-  | { type: "dev reset" }
-  | { type: "set region"; region: Region };
+  | { type: "set region"; region: Region }
+  | { type: "set location"; location: Location.LocationData }
+  | { type: "dev reset" };
 
 export const createInitialState = (): AppState => ({
   me: {
@@ -35,7 +38,8 @@ export const createInitialState = (): AppState => ({
     atRisk: null
   },
   map: {
-    region: null
+    region: null,
+    location: null
   }
 });
 
@@ -63,7 +67,10 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, me: { ...action.me } };
 
     case "set region":
-      return { ...state, map: { region: action.region } };
+      return { ...state, map: { ...state.map, region: action.region } };
+
+    case "set location":
+      return { ...state, map: { ...state.map, location: action.location } };
 
     case "dev reset":
       return createInitialState();

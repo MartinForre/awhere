@@ -9,11 +9,6 @@ import { useAppContext } from "../../appContext";
 export default function App() {
   const { state, dispatch } = useAppContext();
 
-  const [location, setLocation] = React.useState<Location.LocationData | null>(
-    null
-  );
-  const [region, setRegion] = React.useState<Region | null>(null);
-
   const getLocationAsync = async () => {
     if (Platform.OS === "android" && !Constants.isDevice) {
       console.log("No location");
@@ -28,7 +23,7 @@ export default function App() {
     }
 
     const currentLocation = await Location.getCurrentPositionAsync({});
-    setLocation(currentLocation);
+    dispatch({ type: "set location", location: currentLocation });
   };
 
   React.useEffect(() => {
@@ -37,34 +32,38 @@ export default function App() {
 
   const initialRegion = React.useMemo<Region>(
     () => ({
-      latitude: location?.coords.latitude,
+      latitude: state.map.location?.coords.latitude,
       latitudeDelta: 0.0421,
-      longitude: location?.coords.longitude,
+      longitude: state.map.location?.coords.longitude,
       longitudeDelta: 0.0922
     }),
-    [location]
+    [state.map.location]
   );
 
   const handleUserLocationChange = React.useCallback((e: EventUserLocation) => {
-    setLocation({ coords: e.nativeEvent.coordinate, timestamp: +new Date() });
+    dispatch({
+      type: "set location",
+      location: { coords: e.nativeEvent.coordinate, timestamp: +new Date() }
+    });
   }, []);
 
   const handleRegionChange = React.useCallback((region: Region) => {
-    setRegion(region);
     dispatch({ type: "set region", region });
   }, []);
 
   return (
     <View style={styles.container}>
-      {location && (
+      {state.map.location && (
         <MapView
           style={styles.mapStyle}
+          mapType="hybrid"
           initialRegion={state.map.region || initialRegion}
           onRegionChange={handleRegionChange}
           onUserLocationChange={handleUserLocationChange}
           showsUserLocation
           showsCompass
           showsScale
+          showsMyLocationButton
         />
       )}
     </View>
