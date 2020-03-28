@@ -12,7 +12,7 @@ type RiskRegistraionCircle = RiskRegistration & {
   radius: number;
 };
 
-export default function App() {
+const MapTab = () => {
   const { state, dispatch } = useAppContext();
 
   const getLocationAsync = async () => {
@@ -78,7 +78,7 @@ export default function App() {
       );
 
       if (existing) {
-        existing.radius += 1;
+        existing.radius += r.severity * 2;
         existing.severity += r.severity;
         return all;
       } else {
@@ -122,15 +122,15 @@ export default function App() {
               }
               center={registration.riskArea}
               radius={circleRadius * registration.radius}
-              fillColor={`rgba(255, 0, 0, ${registration.severity / 3})`}
-              strokeColor="rgba(255, 0, 0, 1)"
+              fillColor={`rgba(255, 77, 138, ${registration.severity / 3})`}
+              strokeColor="rgba(255, 77, 138, 1)"
             />
           ))}
         </MapView>
       )}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -143,3 +143,5 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject
   }
 });
+
+export default MapTab;

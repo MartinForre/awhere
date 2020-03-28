@@ -21,7 +21,7 @@ const RecoveredRow = () => {
   );
 
   return (
-    <>
+    <View style={styles.section}>
       <View style={styles.row}>
         <Text style={styles.rowTitle}>I have recovered</Text>
       </View>
@@ -42,7 +42,7 @@ const RecoveredRow = () => {
           text="Maybe"
         />
       </View>
-    </>
+    </View>
   );
 };
 

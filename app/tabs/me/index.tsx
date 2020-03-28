@@ -1,21 +1,33 @@
 import React from "react";
-import { SafeAreaView, Button, View, Text } from "react-native";
+import { SafeAreaView, View, Text, Switch } from "react-native";
 import styles from "./styles";
 import InfectedRow from "./components/InfectedRow";
 import RecoveredRow from "./components/RecoveredRow";
 import AtRiskRow from "./components/AtRiskRow";
+import { Ionicons } from "@expo/vector-icons";
 import { useAppContext } from "../../appContext";
 
-export default function App() {
-  const { dispatch } = useAppContext();
+const MeTab = () => {
+  const { state, dispatch } = useAppContext();
+
+  const toggleNotifications = React.useCallback(() => {
+    dispatch({ type: "toggle notifications" });
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ alignItems: "flex-start", margin: 20 }}>
-        <Text>
+      <View style={styles.infoBubble}>
+        <Ionicons
+          name="ios-information-circle-outline"
+          size={34}
+          color="#666666"
+        />
+        <Text style={styles.infoBubbleText}>
           Info: We do not store any information about you. The only thing we
           store is if any infected people has been in the area
         </Text>
+      </View>
+      <View style={styles.row}>
         <Text style={{ marginTop: 20, fontSize: 20 }}>
           All fields below are optional
         </Text>
@@ -23,10 +35,17 @@ export default function App() {
       <InfectedRow />
       <AtRiskRow />
       <RecoveredRow />
-      <Button
-        onPress={() => dispatch({ type: "dev reset" })}
-        title="RESET STORE"
-      />
+      <View style={styles.notificationRow}>
+        <Ionicons name="ios-notifications" size={16} color="#666666" />
+        <Text style={styles.notificationRowText}>Turn on notifications</Text>
+        <Switch
+          value={state.me.isNotificationsOn}
+          onValueChange={toggleNotifications}
+          trackColor={{ false: "#9A00FF", true: "#9A00FF" }}
+        />
+      </View>
     </SafeAreaView>
   );
-}
+};
+
+export default MeTab;

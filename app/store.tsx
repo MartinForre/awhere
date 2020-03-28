@@ -11,6 +11,7 @@ export type MyState = {
   recovered: Recovered;
   atRisk: AtRisk;
   hasBeenTouched?: boolean;
+  isNotificationsOn: boolean;
 };
 
 export type MapState = {
@@ -28,6 +29,7 @@ export type AppAction =
   | { type: "set is infected"; infected: Infected }
   | { type: "set has recovered"; recovered: Recovered }
   | { type: "set at risk"; atRisk: AtRisk }
+  | { type: "toggle notifications" }
   | { type: "reset me"; me: MyState }
   | { type: "set region"; region: Region }
   | { type: "set location"; location: Location.LocationData }
@@ -38,7 +40,8 @@ export const createInitialState = (): AppState => ({
   me: {
     infected: null,
     recovered: null,
-    atRisk: null
+    atRisk: null,
+    isNotificationsOn: false
   },
   map: {
     region: null,
@@ -52,19 +55,39 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
     case "set has recovered":
       return {
         ...state,
-        me: { ...state.me, recovered: action.recovered, hasBeenTouched: true }
+        me: {
+          ...state.me,
+          recovered:
+            action.recovered === state.me.recovered ? null : action.recovered,
+          hasBeenTouched: true
+        }
       };
 
     case "set is infected":
       return {
         ...state,
-        me: { ...state.me, infected: action.infected, hasBeenTouched: true }
+        me: {
+          ...state.me,
+          infected:
+            action.infected === state.me.infected ? null : action.infected,
+          hasBeenTouched: true
+        }
       };
 
     case "set at risk":
       return {
         ...state,
-        me: { ...state.me, atRisk: action.atRisk, hasBeenTouched: true }
+        me: {
+          ...state.me,
+          atRisk: action.atRisk === state.me.atRisk ? null : action.atRisk,
+          hasBeenTouched: true
+        }
+      };
+
+    case "toggle notifications":
+      return {
+        ...state,
+        me: { ...state.me, isNotificationsOn: !state.me.isNotificationsOn }
       };
 
     case "reset me":

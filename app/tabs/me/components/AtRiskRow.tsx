@@ -21,7 +21,7 @@ const AtRiskRow = () => {
   );
 
   return (
-    <>
+    <View style={styles.section}>
       <View style={styles.row}>
         <Text style={styles.rowTitle}>I'm at risk</Text>
       </View>
@@ -42,7 +42,7 @@ const AtRiskRow = () => {
           text="Maybe"
         />
       </View>
-    </>
+    </View>
   );
 };
 

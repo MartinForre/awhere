@@ -21,7 +21,7 @@ const InfectedRow = () => {
   );
 
   return (
-    <>
+    <View style={styles.section}>
       <View style={styles.row}>
         <Text style={styles.rowTitle}>I'm infected</Text>
       </View>
@@ -42,7 +42,7 @@ const InfectedRow = () => {
           text="Maybe"
         />
       </View>
-    </>
+    </View>
   );
 };
 
