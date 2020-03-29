@@ -31,7 +31,7 @@ const useRiskRegistrationCircles = (
       );
 
       if (existing) {
-        existing.radius += 1;
+        existing.radius += 0.5;
         existing.severity += r.severity;
         return all;
       } else {
